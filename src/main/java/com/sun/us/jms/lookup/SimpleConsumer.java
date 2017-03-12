@@ -1,4 +1,4 @@
-package com.sun.us.jms;
+package com.sun.us.jms.lookup;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;

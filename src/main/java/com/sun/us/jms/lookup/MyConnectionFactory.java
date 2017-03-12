@@ -1,4 +1,4 @@
-package com.sun.us.jms;
+package com.sun.us.jms.lookup;
 
 import java.util.Properties;
 
