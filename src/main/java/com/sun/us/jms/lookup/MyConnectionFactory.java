@@ -21,7 +21,7 @@ public class MyConnectionFactory {
 
         Properties props = new Properties();
         props.setProperty(Context.INITIAL_CONTEXT_FACTORY,"org.apache.activemq.jndi.ActiveMQInitialContextFactory");
-        props.setProperty(Context.PROVIDER_URL,"tcp://localhost:61616");//8161
+        props.setProperty(Context.PROVIDER_URL,"tcp://192.168.0.3:61616");//8161
         props.setProperty("queue.xxx", "rinkeshQueue");
 
                             /*

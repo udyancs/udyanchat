@@ -15,7 +15,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class Consumer implements MessageListener {
 
-    public static String brokerURL = "tcp://localhost:61616";
+    public static String brokerURL = "tcp://192.168.0.3:61616";
 
     private Connection connection;
     private Session session;

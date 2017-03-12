@@ -5,7 +5,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class App
 {
-    public static String brokerURL = "tcp://localhost:61616";
+    public static String brokerURL = "tcp://192.168.0.3:61616";
 
     public static void main( String[] args ) throws Exception
     {
