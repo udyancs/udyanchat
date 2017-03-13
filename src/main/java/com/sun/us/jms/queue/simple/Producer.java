@@ -1,4 +1,4 @@
-package com.sun.us.jms.simple;
+package com.sun.us.jms.queue.simple;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;

@@ -1,4 +1,4 @@
-package com.sun.us.jms.lookup;
+package com.sun.us.jms.topic;
 
 import java.util.Properties;
 
@@ -18,31 +18,28 @@ import javax.naming.NamingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/**
- * Created by udyan.shardhar on 3/12/17.
- */
-public class LookupConsumer implements MessageListener {
+import com.sun.us.jms.queue.lookup.LookupConsumer;
+
+public class SiddharthConsumer implements MessageListener {
 
     private static final Log log = LogFactory.getLog(LookupConsumer.class);
-
-
-    //public static String brokerURL = "tcp://192.168.0.3:61616";
 
     private Context jndiContext;
 
     public static void main( String[] args )
     {
-        LookupConsumer lookupConsumer = new LookupConsumer();
+        SiddharthConsumer lookupConsumer = new SiddharthConsumer();
         lookupConsumer.setup();
     }
 
     private void setup()
     {
 
+        // Watch the Queue at http://localhost:8161/admin/
         Properties props = new Properties();
         props.setProperty(Context.INITIAL_CONTEXT_FACTORY,"org.apache.activemq.jndi.ActiveMQInitialContextFactory");
-        props.setProperty(Context.PROVIDER_URL,"tcp://192.168.0.3:61616");//8161
-        props.setProperty("queue.MyQueue", "learning.queue");
+        props.setProperty(Context.PROVIDER_URL,"tcp://localhost:61616");
+        props.setProperty("topic.MyTopic", "topic.udyan");
 
         try {
             jndiContext = new InitialContext(props);
@@ -58,7 +55,7 @@ public class LookupConsumer implements MessageListener {
             Connection connection = factory.createConnection();
             connection.start();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination destination = (Destination) jndiContext.lookup("MyQueue");
+            Destination destination = (Destination) jndiContext.lookup("MyTopic");
             MessageConsumer consumer = session.createConsumer(destination);
             consumer.setMessageListener(this);
         }
@@ -69,6 +66,7 @@ public class LookupConsumer implements MessageListener {
         }
     }
 
+    @Override
     public void onMessage(Message message)
     {
         try

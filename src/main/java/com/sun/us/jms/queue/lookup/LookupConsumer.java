@@ -1,4 +1,4 @@
-package com.sun.us.jms.lookup;
+package com.sun.us.jms.queue.lookup;
 
 import java.util.Properties;
 
@@ -6,7 +6,9 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.MessageProducer;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.Context;
@@ -16,27 +18,29 @@ import javax.naming.NamingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class LookupProducer {
+public class LookupConsumer implements MessageListener {
 
     private static final Log log = LogFactory.getLog(LookupConsumer.class);
 
+
+    //public static String brokerURL = "tcp://192.168.0.3:61616";
+
     private Context jndiContext;
-    private Connection connection;
 
     public static void main( String[] args )
     {
-        LookupProducer lookupProducer = new LookupProducer();
-        lookupProducer.sendMessage();
-
+        LookupConsumer lookupConsumer = new LookupConsumer();
+        lookupConsumer.setup();
     }
 
-    private void sendMessage()
+    private void setup()
     {
 
+        // Watch the Queue at http://localhost:8161/admin/
         Properties props = new Properties();
         props.setProperty(Context.INITIAL_CONTEXT_FACTORY,"org.apache.activemq.jndi.ActiveMQInitialContextFactory");
-        props.setProperty(Context.PROVIDER_URL,"tcp://192.168.0.3:61616");//8161
-        props.setProperty("queue.MyQueue", "learning.queue");
+        props.setProperty(Context.PROVIDER_URL,"tcp://localhost:61616");
+        props.setProperty("queue.MyQueue", "rinkesh");
 
         try {
             jndiContext = new InitialContext(props);
@@ -49,29 +53,38 @@ public class LookupProducer {
         {
 
             ConnectionFactory factory = (ConnectionFactory) jndiContext.lookup("ConnectionFactory");
-            connection = factory.createConnection();
+            Connection connection = factory.createConnection();
             connection.start();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination destination = (Destination) jndiContext.lookup("MyQueue");
-            MessageProducer producer = session.createProducer(destination);
-
-            TextMessage message = session.createTextMessage();
-
-            message.setText("This is message from Udyan");
-            log.info("Sending message: " + message.getText());
-            producer.send(message);
+            MessageConsumer consumer = session.createConsumer(destination);
+            consumer.setMessageListener(this);
         }
         catch (Exception e)
         {
             System.out.println("Caught:" + e);
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (JMSException ignored) {
-                }
+        }
+    }
+
+    public void onMessage(Message message)
+    {
+        try
+        {
+            if (message instanceof TextMessage)
+            {
+                TextMessage txtMessage = (TextMessage)message;
+                System.out.println("Message received: " + txtMessage.getText());
             }
+            else
+            {
+                System.out.println("Invalid message received.");
+            }
+        }
+        catch (JMSException e)
+        {
+            System.out.println("Caught:" + e);
+            e.printStackTrace();
         }
     }
 }
